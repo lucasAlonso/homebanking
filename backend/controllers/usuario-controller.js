@@ -1,19 +1,28 @@
-let usuarios = require("../usuarios.json");
+let Usuario = require('../models/usuario-model');
 
 function postUsuario(req, res) {
-    const nuevoUsuario = req.body;
-    nuevoUsuario.saldo = 0;
-    usuarios.push(nuevoUsuario);
-
-    res.status(200).json(nuevoUsuario);
+    const usuarioDB = new Usuario(req.body);
+    usuarioDB
+        .save()
+        .then((resultado) => {
+            res.status(201).send();
+        })
+        .catch((err) => {
+            res.status(540).send();
+        });
 }
-
 function getUsuarios(req, res) {
-    res.json(usuarios);
+    Usuario.find()
+        .then((usuarios) => {
+            res.json(usuarios);
+        })
+        .catch((err) => {
+            res.status(500).send();
+        });
 }
 
 function getUser(req, res) {
-    usuario = req.usuario;
+    userToFind = req.usuario;
     res.json(usuario);
 }
 
@@ -21,9 +30,9 @@ function postLogin(req, res) {
     res.status(200).json(req.token);
 }
 
-function getUserFromDB (user){
-    const encontrado = usuarios.find(element => element.usuario === user);
-    return encontrado
+function getUserFromDB(user) {
+    const encontrado = usuarios.find((element) => element.usuario === user);
+    return encontrado;
 }
 
 function postDeposito(req, res) {
@@ -42,10 +51,12 @@ function postTransferencia(req, res) {
     usuarioEmisor.saldo = parseInt(usuarioEmisor.saldo) - monto;
     usuarioReceptor.saldo = parseInt(usuarioReceptor.saldo) + monto;
 
-    res.status(200).send(JSON.stringify({
-        saldoEmisor: usuarioEmisor.saldo,
-        saldoReceptor: usuarioReceptor.saldo
-    }));
+    res.status(200).send(
+        JSON.stringify({
+            saldoEmisor: usuarioEmisor.saldo,
+            saldoReceptor: usuarioReceptor.saldo,
+        })
+    );
 }
 
 module.exports = {
@@ -54,5 +65,5 @@ module.exports = {
     getUser,
     postLogin,
     postDeposito,
-    postTransferencia
+    postTransferencia,
 };

@@ -1,37 +1,40 @@
-let Usuario = require('../models/usuario-model');
+let Usuario = require("../models/usuario-model");
 
 function postUsuario(req, res) {
     const usuarioDB = new Usuario(req.body);
     usuarioDB
         .save()
-        .then((resultado) => {
+        .then(resultado => {
             res.status(201).send();
         })
-        .catch((err) => {
+        .catch(err => {
             res.status(540).send();
         });
 }
 function getUsuarios(req, res) {
     Usuario.find()
-        .then((usuarios) => {
+        .then(usuarios => {
             res.json(usuarios);
         })
-        .catch((err) => {
+        .catch(err => {
             res.status(500).send();
         });
 }
 
-function getUser(req, res) {
-    userToFind = req.usuario;
-    res.json(usuario);
+function getUserInfo(req, res) {
+    Usuario.findOne({ usuario: req.usuario }, usuario => {
+        res.json(usuario);
+    });
 }
 
 function postLogin(req, res) {
-    res.status(200).json(req.token);
+    let response = req.token;
+    response.idUser = req.idUser;
+    res.status(200).json(response);
 }
 
 function getUserFromDB(user) {
-    const encontrado = usuarios.find((element) => element.usuario === user);
+    const encontrado = usuarios.find(element => element.usuario === user);
     return encontrado;
 }
 
@@ -54,7 +57,7 @@ function postTransferencia(req, res) {
     res.status(200).send(
         JSON.stringify({
             saldoEmisor: usuarioEmisor.saldo,
-            saldoReceptor: usuarioReceptor.saldo,
+            saldoReceptor: usuarioReceptor.saldo
         })
     );
 }
@@ -62,8 +65,8 @@ function postTransferencia(req, res) {
 module.exports = {
     postUsuario,
     getUsuarios,
-    getUser,
+    getUserInfo,
     postLogin,
     postDeposito,
-    postTransferencia,
+    postTransferencia
 };
